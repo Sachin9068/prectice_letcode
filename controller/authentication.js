@@ -62,3 +62,5 @@ const userLogout = async (req,res)=>{
 const userInfo = async (req,res)=>{
     
 }
+
+module.exports = {userRegister,userLogin}

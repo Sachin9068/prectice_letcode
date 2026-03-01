@@ -1,6 +1,7 @@
 
 const express = require('express');
 const userAuth = express();
+const {userRegister,userLogin} = require('../controller/authentication');
 
 
 userAuth.post('/register',userRegister);
