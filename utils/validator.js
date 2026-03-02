@@ -1,7 +1,7 @@
 const validator = require('validator');
 
 
-const validate =(data)=>{
+const validate = (data)=>{
   
     const mendorteryfilds = ["firstName","emailId","password"];
 

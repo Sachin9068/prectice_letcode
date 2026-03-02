@@ -2,21 +2,21 @@ const validate = require('../utils/validator');
 const bcrypt =  require('bcrypt');
 const user = require('../Model/user');
 const jwt = require('jsonwebtoken');
+const redisClient = require('../config/redis');
+
 
 
 const userRegister = async (req,res)=>{
-
-    //validate = entery sahi ki he ki nhi format
 try{
     validate(req.body);
     const {firstName,emailId,password} = req.body;
 
-    req.body.password = await bcrypt(password,10);
+    req.body.password = await bcrypt.hash(password,10);
      req.body.role = 'user';
     const User = await user.create(req.body);
 
     // header.payload.signature
-    const token = jwt.sign({_id:User._id,emailId}, process.env.JWT_KEY ,{expiresIn:60*60});
+    const token = jwt.sign({_id:User._id,emailId:User.emailId}, process.env.JWT_KEY ,{expiresIn:60*60});
     //res.cookie(name, value, [options])
     res.cookie('token',token, {maxAge:60*60*1000});
     res.status(201).send("Resiger Succesfully");
@@ -43,7 +43,7 @@ const userLogin = async (req,res)=>{
     if(!match)
         throw new Error("Invalid Credetial");
 
-    const token = jwt.sign({_id:User._id,emailID},process.env.JWT_KEY,{expiresIn:60*60});
+    const token = jwt.sign({_id:User._id,emailID:User.emailId},process.env.JWT_KEY,{expiresIn:60*60});
     res.cookie('token',token,{maxAge:60*60*1000});
 
     res.status(200).send("Login Succefully");
@@ -56,11 +56,28 @@ catch(err){
 }
 
 const userLogout = async (req,res)=>{
-    
+ try{
+      const{token} = req.cookies;
+      const payload = jwt.decode(token);
+  
+        //   await client.set("key", "value");
+     await redisClient.set(`token:${token}`,"Blocked");
+     await redisClient.expireAt(`token:${token}`,payload.exp);
+
+     res.cookie('token',null,{expires:new Date(Date.now())});
+     res.send("Logout Sccuesfully");
+    }
+ catch(err){
+    res.status(500).send("ERRor : "+err);
+ }
+
+
+
+
 }
 
 const userInfo = async (req,res)=>{
     
 }
 
-module.exports = {userRegister,userLogin}
+module.exports = {userRegister,userLogin,userLogout};
