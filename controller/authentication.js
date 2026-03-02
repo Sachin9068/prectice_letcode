@@ -16,7 +16,28 @@ try{
     const User = await user.create(req.body);
 
     // header.payload.signature
-    const token = jwt.sign({_id:User._id,emailId:User.emailId}, process.env.JWT_KEY ,{expiresIn:60*60});
+    const token = jwt.sign({_id:User._id,emailId:User.emailId,role:'user'}, process.env.JWT_KEY ,{expiresIn:60*60});
+    //res.cookie(name, value, [options])
+    res.cookie('token',token, {maxAge:60*60*1000});
+    res.status(201).send("Resiger Succesfully");
+
+}
+catch(err){
+    res.status(400).send("Error : "+err);
+}
+
+}
+
+const adminRegister =  async (req,res)=>{
+try{
+    validate(req.body);
+    const {firstName,emailId,password} = req.body;
+
+    req.body.password = await bcrypt.hash(password,10);
+    const User = await user.create(req.body);
+
+    // header.payload.signature
+    const token = jwt.sign({_id:User._id,emailId:User.emailId,role:User.role}, process.env.JWT_KEY ,{expiresIn:60*60});
     //res.cookie(name, value, [options])
     res.cookie('token',token, {maxAge:60*60*1000});
     res.status(201).send("Resiger Succesfully");
@@ -43,7 +64,7 @@ const userLogin = async (req,res)=>{
     if(!match)
         throw new Error("Invalid Credetial");
 
-    const token = jwt.sign({_id:User._id,emailID:User.emailId},process.env.JWT_KEY,{expiresIn:60*60});
+    const token = jwt.sign({_id:User._id,emailID:User.emailId,role:User.role},process.env.JWT_KEY,{expiresIn:60*60});
     res.cookie('token',token,{maxAge:60*60*1000});
 
     res.status(200).send("Login Succefully");
@@ -80,4 +101,4 @@ const userInfo = async (req,res)=>{
     
 }
 
-module.exports = {userRegister,userLogin,userLogout};
+module.exports = {userRegister,userLogin,userLogout,adminRegister};
