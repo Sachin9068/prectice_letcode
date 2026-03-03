@@ -1,4 +1,4 @@
-const getLanguageById = require('../utils/problemutils');
+const {getLanguageById,submitBatch} = require('../utils/problemutils');
 
 const createProblem = async(req,res)=>{
     const{title,dificultylevel,tag,visibletestcase,hiddentestcase,startcode,referenceSolution,problemcreator} = req.body;
@@ -14,7 +14,11 @@ const createProblem = async(req,res)=>{
                 stdin:testcase.input,
                 expected_output:testcase.output
 
-            }))
+            }));
+
+            const submitResult = submitBatch(submission);
+
+            
         }
     }
     catch(err){

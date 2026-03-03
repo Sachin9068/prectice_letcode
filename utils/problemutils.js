@@ -1,3 +1,4 @@
+const axios = require('axios');
 
 const getLanguageById = (lang)=>{
     const language = {
@@ -12,5 +13,36 @@ const getLanguageById = (lang)=>{
     return language[lang.toLowerCase()]
 }
 
+const submitBatch = async (submissions)=>{
+    
+const options = {
+  method: 'POST',
+  url: 'https://judge0-ce.p.rapidapi.com/submissions/batch',
+  params: {
+    base64_encoded: 'true'
+  },
+  headers: {
+    'x-rapidapi-key': 'b2e33b180amsh96ee72126865d2cp1c5418jsn721a4e31b02e',
+    'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
+    'Content-Type': 'application/json'
+  },
+  data: {
+    submissions
+  }
+};
 
-module.exports = getLanguageById;
+async function fetchData() {
+	try {
+		const response = await axios.request(options);
+		return response.data;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+return fetchData();
+
+}
+
+
+module.exports = {getLanguageById,submitBatch};
