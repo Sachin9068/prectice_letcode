@@ -26,8 +26,6 @@ try{
  if(IsBlocked)
     throw new Error("Invalid Token");
 
- 
-
  req.result = result;
 
  next();

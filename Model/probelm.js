@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const {Schema} =require('mongoose');
 
 const problemSchema = mongoose.Schema({
 
@@ -14,7 +15,7 @@ const problemSchema = mongoose.Schema({
     tag:{
         type:String,
         required:true,
-        enum:['noraml','array','tree','dynamicprograming','linklist']
+        enum:['array','tree','dynamicprograming','linklist']
     },
     visibletestcase:[
         {
@@ -68,10 +69,10 @@ const problemSchema = mongoose.Schema({
             }
         }
     ],
-    problemcreator:{
-        type:Schema.type.ObjectId,
+    problemCreator:{
+        type:Schema.Types.ObjectId,
         ref:'User',
-        required:true
+    required: true
     }
 
 },{timeStamp:true});
@@ -79,3 +80,4 @@ const problemSchema = mongoose.Schema({
 const problem = mongoose.model('problem',problemSchema);
 
 module.exports = problem;
+
