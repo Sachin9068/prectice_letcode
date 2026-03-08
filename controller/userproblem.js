@@ -33,12 +33,7 @@ const createProblem = async(req,res)=>{
             
             const testresult = await submitToken(resulttoken);
             // console.log(testresult);
-
-           for(const test of testresult){
-            if(test.status_id!=3){
-                return res.status(400).send("Error Occured");
-             }
-            }
+         
  
         }
 
@@ -57,18 +52,20 @@ const createProblem = async(req,res)=>{
 
 
 const UpdateProblem = async (req,res)=>{
-    const id = req.params;
-    if(!id)
-      return res.status(400).send("Id is Missing");
-
-    const result = await findByid(id);
-    if(!result)
-      return res.status(401).send("Invalid id");
+    
 
     const{title,dificultylevel,tag,visibletestcase,hiddentestcase,
          startcode,referenceSolution,problemcreator} = req.body;
 
     try{
+
+    const {id} = req.params;
+    if(!id)
+      return res.status(400).send("Id is Missing");
+
+    const DsaProblem = await problem.findById(id);
+    if(!DsaProblem)
+      return res.status(401).send("DsaProblem not present");
 
         for(const {language,completecode} of referenceSolution){
 
@@ -98,12 +95,9 @@ const UpdateProblem = async (req,res)=>{
  
         }
 
-       
-
-        
-
-
-        res.status(201).send("Problem update Succesfully..");
+         //Model.findByIdAndUpdate(id, updateData, options)
+       const newProblem = await problem.findByIdAndUpdate(id,{...req.body},{runValidators:true,new:true});
+        res.status(201).send(newProblem + "Problem update Succesfully..");
         
     }
     catch(err){
@@ -114,10 +108,61 @@ const UpdateProblem = async (req,res)=>{
 }
 
 const problemDelete = async (req,res)=>{
+ const {id} = req.params;
+  try{
+       if(!id)
+        return res.status(404).send("Problem id Not Found");
+      //Model.findByIdAndDelete(id, options)
+      const IsDelete = await problem.findByIdAndDelete(id);
+      if(!IsDelete){
+        return res.status(404).send("Problem not Delete");
+      }
+
+      res.status(201).send("Problem Deleted Succesfully");
+  }
+  catch(err){
+     res.status(500).send("Problem Delete Error : "+err);
+  }
 
 }
 
-module.exports = {createProblem,UpdateProblem,problemDelete};
+const fetchInfoById = async(req,res)=>{
+ 
+  const {id} = req.params;
+  try{
+       if(!id)
+        return res.status(404).send("missing id");
+
+       const getProblem = await problem.findById(id).select('_id title dificultylevel tag visibletestcase startcode referenceSolution');
+       if(!getProblem)
+        return res.status(404).send("missing problem");
+
+       res.status(201).send(getProblem);
+  }
+  catch(err){
+    res.status(500).send("Fetch by id Error : "+err);
+  }
+
+} 
+
+const fetchAllProblem = async (req,res)=>{
+
+ try{
+    const getproblems = await problem.find({}).select('_id title dificultylevel tag');
+    if(getproblems.length == 0)
+      return res.status(404).send("problem not fetch");
+
+    res.status(201).send(getproblems);
+ }
+ catch(err){
+  res.status(500).send("fatchAllinfo Error : "+err);
+ }
+
+}
+
+
+
+module.exports = {createProblem,UpdateProblem,problemDelete,fetchInfoById,fetchAllProblem};
 
 /* 
 {
