@@ -1,3 +1,4 @@
+const { memo } = require('react');
 const problem = require('../Model/probelm');
 const Submition = require('../Model/submition');
 const {getLanguageById,submitBatch,submitToken} = require('../utils/problemutils');
@@ -45,12 +46,59 @@ const userSubmit = async (req,res)=>{
             
             const testresult = await submitToken(resulttoken);
 
+            let testcase = 0;
+            let errmsg = '';
+            let memory = 0;
+            let runtime = 0;
+            let status = 'accepted';
+
+            for(test of testresult){
+                if(test.status_id==3){
+                    testcase++;
+                    runtime+=parseFloat(test.time);
+                    memory=Math.max(memory,test.memory);
+                }
+                else{
+                    if(test.status_id==4){
+                        status = 'Wrong Answer';
+                        errmsg = test.stderr;
+                    }
+                    else{
+                        status = 'error';
+                        errmsg = test.stderr;
+                    }
+                }
+            }
+
+            storeResult.status = status;
+            storeResult.runtime = runtime;
+            storeResult.memory = memory;
+            storeResult.errmsg = errmsg;
+            storeResult.testcasepassed = testcase;
+         
+            await storeResult.save();
+
+            res.status(201).send('submittes Result');
+
     }
     catch(err){
-
+       res.status(500).send('Submit Error : '+err);
     }
 
 }
 
 
 module.exports = {userSubmit};
+
+
+//     language_id: 54,
+//     stdin: '2 3',
+//     expected_output: '5',
+//     stdout: '5',
+//     status_id: 3,
+//     created_at: '2025-05-12T16:47:37.239Z',
+//     finished_at: '2025-05-12T16:47:37.695Z',
+//     time: '0.002',
+//     memory: 904,
+//     stderr: null,
+//     token: '611405fa-4f31-44a6-99c8-6f407bc14e73',

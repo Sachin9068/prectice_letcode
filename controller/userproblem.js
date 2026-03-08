@@ -33,7 +33,12 @@ const createProblem = async(req,res)=>{
             
             const testresult = await submitToken(resulttoken);
             // console.log(testresult);
-         
+
+           for(const test of testresult){
+            if(test.status_id!=3){
+                return res.status(400).send(id[test-1]);
+             }
+            }
  
         }
 
