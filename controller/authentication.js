@@ -3,6 +3,8 @@ const bcrypt =  require('bcrypt');
 const user = require('../Model/user');
 const jwt = require('jsonwebtoken');
 const redisClient = require('../config/redis');
+const Submition = require('../Model/submition');
+const User = require('../Model/user');
 
 
 
@@ -97,8 +99,21 @@ const userLogout = async (req,res)=>{
 
 }
 
-const userInfo = async (req,res)=>{
+const DeleteProfile = async (req,res)=>{
+
+    try {
+    const userid = req.result._id;
+
+    await User.findByIdAndDelete(userid);
+    await Submition.deleteMany({ userid });
+
+    res.status(200).send("Profile Delete Successfully");
+} catch (error) {
+    res.status(500).send("Error deleting profile");
+}
     
 }
 
-module.exports = {userRegister,userLogin,userLogout,adminRegister};
+
+
+module.exports = {userRegister,userLogin,userLogout,adminRegister,DeleteProfile};

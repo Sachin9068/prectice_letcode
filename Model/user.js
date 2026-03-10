@@ -28,7 +28,11 @@ const userSchema = mongoose.Schema({
        default:'user'
     },
     problemSolution:{
-       type:[String]
+       type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'problem'
+        }],
+        unique:true
     },
     password:{
        type:String,
@@ -38,6 +42,6 @@ const userSchema = mongoose.Schema({
 
 },{timeStamp:true});
 
-const User = mongoose.model('User',userSchema);
+const User = mongoose.model('user',userSchema);
 
 module.exports = User;

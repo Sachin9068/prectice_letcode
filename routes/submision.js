@@ -1,6 +1,10 @@
-const express = require('express');
-const submitRoute = express.Router();
+const submitRoute = require("express").Router();
 const userMiddleware = require('../Middleware/userMiddleware');
-const userSubmit  = require('../controller/userSubmision');
+const {SubmitCode,RunCode}  = require('../controller/userSubmision');
 
-submitRoute.post('/submit/:id',userMiddleware,userSubmit);
+submitRoute.post('/submit/:id',userMiddleware,SubmitCode);
+submitRoute.post('/run/:id',userMiddleware,RunCode);
+
+module.exports = submitRoute;
+
+

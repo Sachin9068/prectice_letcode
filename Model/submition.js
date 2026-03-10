@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const {schema} = require('mongoose');
+const {Schema} = require('mongoose');
 
-const submition = mongoose.schema({
+const submition = mongoose.Schema({
     userid:{
         type:Schema.Types.ObjectId,
-        ref:'User',
+        ref:'user',
         required:true
     },
     problemid:{
@@ -29,11 +29,12 @@ const submition = mongoose.schema({
     },
     runtime:{
         type:Number,  //milisecond
-        required:true
+        
+
     },
     memory:{
         type:Number ,  //kb
-        required:true
+    
     },
     errmsg:{
         type:String,
@@ -41,11 +42,11 @@ const submition = mongoose.schema({
     },
     testcasepassed:{
         type:Number,
-        required:true
+        
     },
     totaltestcase:{
         type:Number,
-        required:true
+       
     }
 
 },{timestamps: true})

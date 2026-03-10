@@ -1,9 +1,9 @@
-const { memo } = require('react');
+
 const problem = require('../Model/probelm');
 const Submition = require('../Model/submition');
 const {getLanguageById,submitBatch,submitToken} = require('../utils/problemutils');
 
-const userSubmit = async (req,res)=>{
+const SubmitCode = async (req,res)=>{
 
     try{
         const userid = req.result._id;
@@ -22,15 +22,15 @@ const userSubmit = async (req,res)=>{
             problemid,
             code,
             language,
-            status:'panding',
-            totaltestcase:problem.hiddentestcase.lenght
-        })
+            status:'In Queue',
+            totaltestcase : problems.hiddentestcase.length
+        }) 
 
         // send judge0
 
         const languageId = getLanguageById(language);
 
-        const submission = visibletestcase.map((testcase)=>({
+        const submission = problems.hiddentestcase.map((testcase)=>({
                         source_code:code,
                         language_id:languageId,
                         stdin:testcase.input,
@@ -43,19 +43,19 @@ const userSubmit = async (req,res)=>{
 
             const resulttoken = submitResult.map((value)=>value.token);
 
-            
+  
             const testresult = await submitToken(resulttoken);
 
             let testcase = 0;
-            let errmsg = '';
+            let errmsg = null;
             let memory = 0;
             let runtime = 0;
-            let status = 'accepted';
+            let status = 'Accepted';
 
             for(test of testresult){
                 if(test.status_id==3){
                     testcase++;
-                    runtime+=parseFloat(test.time);
+                    runtime=runtime + parseFloat(test.time);
                     memory=Math.max(memory,test.memory);
                 }
                 else{
@@ -64,7 +64,7 @@ const userSubmit = async (req,res)=>{
                         errmsg = test.stderr;
                     }
                     else{
-                        status = 'error';
+                        status = 'Runtime Error (Other)';
                         errmsg = test.stderr;
                     }
                 }
@@ -78,7 +78,12 @@ const userSubmit = async (req,res)=>{
          
             await storeResult.save();
 
-            res.status(201).send('submittes Result');
+         if (!req.result.problemSolution.includes(problemid)) {
+            req.result.problemSolution.push(problemid);
+            await req.result.save();
+            }
+
+            res.status(201).send(storeResult);
 
     }
     catch(err){
@@ -87,8 +92,46 @@ const userSubmit = async (req,res)=>{
 
 }
 
+const RunCode = async (req,res)=>{
+     try{
+        const userid = req.result._id;
+        console.log(userid);
+        const problemid = req.params.id;
 
-module.exports = {userSubmit};
+        const {code,language} = req.body
+
+        if(!userid||!problemid||!code||!language)
+            return res.status(400).send("Some Filds missing");
+
+        const problems = await problem.findById(problemid);
+        // send judge0
+
+        const languageId = getLanguageById(language);
+
+        const submission = problems.visibletestcase.map((testcase)=>({
+                        source_code:code,
+                        language_id:languageId,
+                        stdin:testcase.input,
+                        expected_output:testcase.output
+        
+                    }));
+
+
+            const submitResult = await submitBatch(submission);
+
+            const resulttoken = submitResult.map((value)=>value.token);
+
+            const testresult = await submitToken(resulttoken);
+
+            res.status(201).send(testresult);
+
+    }
+    catch(err){
+       res.status(500).send('Run Error : '+err);
+    }
+}
+
+module.exports = {SubmitCode,RunCode};
 
 
 //     language_id: 54,

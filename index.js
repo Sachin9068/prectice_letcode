@@ -6,7 +6,7 @@ const main = require('./config/db');
 const userAuth = require('./routes/userAuthentication');
 const redisClient = require('./config/redis');
 const probleRoute = require('./routes/problemcreator');
-
+const submitRoute = require('./routes/submision');
 
 
 app.use(express.json());
@@ -14,6 +14,8 @@ app.use(cookieParser());
 
 app.use('/user',userAuth);
 app.use('/problem',probleRoute);
+app.use('/submission',submitRoute)
+
 
 const startServer = async ()=>{
 
