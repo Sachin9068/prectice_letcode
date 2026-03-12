@@ -1,6 +1,7 @@
 const {getLanguageById,submitBatch,submitToken} = require('../utils/problemutils');
 const problem = require('../Model/probelm');
 const User = require('../Model/user');
+const Submition = require('../Model/submition');
 
 const createProblem = async(req,res)=>{
     const{title,dificultylevel,tag,visibletestcase,hiddentestcase,
@@ -183,8 +184,27 @@ const solvedAllProblem = async (req,res)=>{
   }
 }
 
+const submittedProblem = async (req,res)=>{
+       
+     try{
 
-module.exports = {createProblem,UpdateProblem,problemDelete,fetchInfoById,fetchAllProblem,solvedAllProblem};
+      const userid = req.result._id;
+      const problemid = req.params.id;
+      const ans = await Submition.find({userid, problemid});
+     if(ans.length==0)
+    res.status(200).send("No Submission is persent");
+
+  res.status(200).send(ans);
+    
+    }
+     catch(err){
+      res.status(500).send("SubmitProblem Error : "+err);
+     }
+
+}
+
+
+module.exports = {createProblem,UpdateProblem,problemDelete,fetchInfoById,fetchAllProblem,solvedAllProblem,submittedProblem};
 
 /* 
 {
