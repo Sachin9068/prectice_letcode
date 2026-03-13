@@ -66,10 +66,19 @@ const userLogin = async (req,res)=>{
     if(!match)
         throw new Error("Invalid Credetial");
 
+    const reply = {
+        firstName:user.firstName,
+        emailId:user.emailId,
+        _id:user._id
+    }
+
     const token = jwt.sign({_id:User._id,emailID:User.emailId,role:User.role},process.env.JWT_KEY,{expiresIn:60*60});
     res.cookie('token',token,{maxAge:60*60*1000});
 
-    res.status(200).send("Login Succefully");
+    res.status(200).json({
+        User:reply,
+        message:"Login succusfully"
+    });
  }
 catch(err){
     res.status(400).send("ERROR : "+err);
