@@ -21,7 +21,17 @@ try{
     const token = jwt.sign({_id:User._id,emailId:User.emailId,role:'user'}, process.env.JWT_KEY ,{expiresIn:60*60});
     //res.cookie(name, value, [options])
     res.cookie('token',token, {maxAge:60*60*1000});
-    res.status(201).send("Resiger Succesfully");
+
+      const reply = {
+        firstName:user.firstName,
+        emailId:user.emailId,
+        _id:user._id
+    }
+
+    res.status(201). res.status(200).json({
+        User:reply,
+        message:"Register Succesfully"
+    });;
 
 }
 catch(err){
