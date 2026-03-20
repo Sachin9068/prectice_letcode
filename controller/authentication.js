@@ -133,6 +133,18 @@ const DeleteProfile = async (req,res)=>{
     
 }
 
+const Check = async (req,res)=>{
+    const reply = {
+        firstName:user.firstName,
+        emailId:user.emailId,
+        _id:user._id
+    }
+
+    res.status(201).json({
+        user:reply,
+        message:"valid"
+    });
+}
 
 
-module.exports = {userRegister,userLogin,userLogout,adminRegister,DeleteProfile};
+module.exports = {userRegister,userLogin,userLogout,adminRegister,DeleteProfile,Check};
