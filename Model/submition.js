@@ -29,8 +29,6 @@ const submition = mongoose.Schema({
     },
     runtime:{
         type:Number,  //milisecond
-        
-
     },
     memory:{
         type:Number ,  //kb

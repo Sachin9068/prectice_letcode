@@ -15,19 +15,20 @@ try{
 
     req.body.password = await bcrypt.hash(password,10);
      req.body.role = 'user';
+
     const User = await user.create(req.body);
 
     // header.payload.signature
-    const token = jwt.sign({_id:User._id,emailId:User.emailId,role:'user'}, process.env.JWT_KEY ,{expiresIn:60*60});
+    const token = jwt.sign({_id:User._id,emailId:emailId,role:'user'}, process.env.JWT_KEY ,{expiresIn:60*60});
     //res.cookie(name, value, [options])
-    res.cookie('token',token, {maxAge:60*60*1000});
-
-      const reply = {
-        firstName:user.firstName,
-        emailId:user.emailId,
-        _id:user._id
+       const reply = {
+        firstName:User.firstName,
+        emailId:User.emailId,
+        _id:User._id,
+        role:User.role,
     }
 
+    res.cookie('token',token, {maxAge:60*60*1000});
     res.status(201). res.status(200).json({
         User:reply,
         message:"Register Succesfully"
@@ -35,7 +36,7 @@ try{
 
 }
 catch(err){
-    res.status(400).send("Error : "+err);
+    res.status(400).send("Register Error : "+err);
 }
 
 }

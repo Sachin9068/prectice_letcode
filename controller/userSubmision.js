@@ -131,7 +131,25 @@ const RunCode = async (req,res)=>{
     }
 }
 
-module.exports = {SubmitCode,RunCode};
+const FetchSubmitCode = async (req,res)=>{
+ 
+    const {id} = req.params;
+    try{
+         if(!id)
+            return res.status(404).send('History not present of the Submition');
+
+         const SubmitCode = await Submition.findById(id);
+         if(!SubmitCode)
+            return res.status(404).send('Missing Submit Code');
+
+         res.status(201).send(SubmitCode);
+    }
+    catch(err){
+           res.send(500).send("FetchSubmitCode Error : "+err);
+    }
+}
+
+module.exports = {SubmitCode,RunCode,FetchSubmitCode};
 
 
 //     language_id: 54,

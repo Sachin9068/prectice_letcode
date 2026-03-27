@@ -12,6 +12,6 @@ probleRoute.delete('/delete/:id',adminMiddlware,problemDelete);
 probleRoute.get('/problemById/:id',userMiddleware,fetchInfoById);
 probleRoute.get('/AllProblem',userMiddleware,fetchAllProblem);
 probleRoute.get('/ProblemSolvedByUser',userMiddleware,solvedAllProblem);
-problemRoute.get('/submittesProblem/:pid',userMiddleware,submittedProblem);
+probleRoute.get('/submittesProblem/:pid',userMiddleware,submittedProblem);
 
 module.exports = probleRoute;
