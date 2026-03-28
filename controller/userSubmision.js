@@ -134,19 +134,21 @@ const RunCode = async (req,res)=>{
 const FetchSubmitCode = async (req,res)=>{
  
     const {id} = req.params;
+    console.log(req.params);
     try{
          if(!id)
             return res.status(404).send('History not present of the Submition');
 
-         const SubmitCode = await Submition.findById(id);
+         const SubmitCode = await Submition.find({problemid:id});
          if(!SubmitCode)
             return res.status(404).send('Missing Submit Code');
 
          res.status(201).send(SubmitCode);
     }
     catch(err){
-           res.send(500).send("FetchSubmitCode Error : "+err);
+           res.status(500).send("FetchSubmitCode Error : " + err);
     }
+
 }
 
 module.exports = {SubmitCode,RunCode,FetchSubmitCode};
@@ -162,4 +164,4 @@ module.exports = {SubmitCode,RunCode,FetchSubmitCode};
 //     time: '0.002',
 //     memory: 904,
 //     stderr: null,
-//     token: '611405fa-4f31-44a6-99c8-6f407bc14e73',
+//     token: '611405fa-4f31-44a6-99c8-6f407bc14e73'
